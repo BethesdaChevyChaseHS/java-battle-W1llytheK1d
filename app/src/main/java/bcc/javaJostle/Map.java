@@ -66,7 +66,7 @@ public class Map {
         endCol = Math.min(cols, endCol);
         startRow = Math.max(0, startRow);
         endRow = Math.min(rows, endRow);
-
+        
         for (int r = startRow; r < endRow; r++) {
             for (int c = startCol; c < endCol; c++) {
                 int tileType = tiles[r][c];
