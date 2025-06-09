@@ -1,7 +1,8 @@
 package bcc.javaJostle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.awt.image.BufferedImage;
+
 public class MyRobot extends Robot{
     //retreatRange is distance from enemy robot that you start retreating from it
     //play around with the retreatRange number against Rando enemy to find optimal value for variable
@@ -15,10 +16,11 @@ public class MyRobot extends Robot{
     int Uptimer = 0;
     int Downtimer = 0;
     public MyRobot(int x, int y){
-        super(x, y, 1, 1, 4, 4,"terminator", "Terminator.jpeg", "defaultProjectileImage.png");
+        super(x, y, 1, 1, 4, 4,"terminator", "terminator.png", "defaultProjectileImage.png");
         // Health: 3, Speed: 3, Attack Speed: 2, Projectile Strength: 2
         // Total = 10
         // Image name is "myRobotImage.png"
+        BufferedImage myImage = Utilities.loadImage("terminator.png");
     }
 
     public void think(ArrayList<Robot> robots, ArrayList<Projectile> projectiles, Map map, ArrayList<PowerUp> powerups) {
@@ -35,52 +37,62 @@ public class MyRobot extends Robot{
          only shoot when canAttack() is true!
         */  
         //ONLY FOR BEATING ROCK  
-        
         for(Robot basicrobot : robots){
             if(basicrobot != this && basicrobot.getName() != "Rock"){
-                //System.out.println(basicrobot.getName());
-                System.out.println(Lefttimer + " " + Righttimer + " " + Uptimer + " " + Downtimer);
-                if(!canMoveLeft(map))Lefttimer = 7;
-                if(!canMoveRight(map))Righttimer = 7;
-                if(!canMoveUp(map))Uptimer = 7;
-                if(!canMoveDown(map))Downtimer = 7;
-                if(Lefttimer > 0)Lefttimer--;
-                if(Righttimer > 0)Righttimer--;
-                if(Uptimer > 0)Uptimer--;
-                if(Downtimer > 0)Downtimer--;
-                if(this.getX() - basicrobot.getX() > 0){
-                    if(Lefttimer <= 0){
-                        xMovement = -1;
-                        System.out.println("moving left");
-                    }
-                    else if(this.getY() - basicrobot.getY() > 0 && Uptimer <= 0){
+                if(counter == 1){
+                    System.out.println("running counter is 1" + prevy + " " + this.getY());
+                    if(prevy != this.getY()){
+                        System.out.println("Moving up");
+                        xMovement = 0;
                         yMovement = -1;
-                        System.out.println("moving up(left)");
-                    } 
-                    else if(basicrobot.getY() - this.getY() >= 0 && Downtimer <= 0){
-                        yMovement = 1;
-                        System.out.println("moving down(left)");
                     }
-                }
-                else if(this.getX() - basicrobot.getX() < 0){
-                    if(Righttimer <= 0){
+                    else{
+                        System.out.println("counter becoming 2");
+                        counter = 2;
                         xMovement = 1;
-                        System.out.println("moving right");
-                    }
-                    else if(this.getY() - basicrobot.getY() > 0 && Uptimer <= 0){
-                        yMovement = -1;
-                        System.out.println("moving up(right)");
-                    } 
-                    else if(basicrobot.getY() - this.getY() >= 0 && Downtimer <= 0){
-                        yMovement = 1;
-                        System.out.println("moving down(right)");
+                        yMovement = 0;
                     }
                 }
-                System.out.println("xMove " + xMovement + " yMove " + yMovement);
+                else if(counter == 2){
+                    if(prevx != this.getX()){
+                        xMovement = 1;
+                        yMovement = 0;
+                    }
+                    else{
+                        counter = 3;
+                        xMovement = 0;
+                        yMovement = 1;
+                    }
+                }
+                else if(counter == 3){
+                    if(prevy != this.getY()){
+                        xMovement = 0;
+                        yMovement = 1;
+                    }
+                    else{
+                        counter = 4;
+                        xMovement = -1;
+                        yMovement = 0;
+                    }
+                }
+                else if(counter == 4){
+                    if(prevx != this.getX()){
+                        xMovement = -1;
+                        yMovement = 0;
+                    }
+                    else{
+                        counter = 1;
+                        xMovement = 0;
+                        yMovement = -1;
+                    }
+                }
                 if(canAttack() == true){
-                    System.out.println("Shooting at " + (basicrobot.getX() + Utilities.ROBOT_SIZE/2) + ", " + (basicrobot.getY() + Utilities.ROBOT_SIZE/2));
                     shootAtLocation(basicrobot.getX() + Utilities.ROBOT_SIZE/2, basicrobot.getY() + Utilities.ROBOT_SIZE/2);
                 }
+                prevx = this.getX();
+                prevy = this.getY();
+            
+                
                 continue;
             }
             
